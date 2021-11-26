@@ -25,5 +25,5 @@ add_executable(malloc_world_with_SDL
         src/monsters.c
         src/pnj.c
         src/structures.c
-        )
+        src/sdl_functions.c)
 
