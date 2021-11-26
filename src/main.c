@@ -10,6 +10,8 @@
 #include <time.h>
 #include "cli.h"
 
+//gcc src/*.c -o cmake-build-debug/malloc_world_with_SDL -I src/include
+//.\cmake-build-debug\malloc_world_with_SDL.exe
 Game* initGame(int, int, int);
 
 
