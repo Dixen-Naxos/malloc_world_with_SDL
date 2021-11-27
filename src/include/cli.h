@@ -10,13 +10,14 @@
 #ifndef MALLOC_WORLD_CLI_H
 #define MALLOC_WORLD_CLI_H
 
-#endif //MALLOC_WORLD_CLI_H
+
 
 #include<stdio.h>
 #include<stdlib.h>
 #include "move.h"
 #include "save.h"
 #include "map.h"
+#include "sdl_functions.h"
 
 
 /**
@@ -66,3 +67,5 @@ int callMove(Game* game);
  * Launch tests written for development Feature
  */
 void test(Game* game);
+
+#endif //MALLOC_WORLD_CLI_H

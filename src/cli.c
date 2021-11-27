@@ -9,7 +9,7 @@
 
 #include "cli.h"
 
-void title(){
+void title() {
     printf("|||           ||| |||         |||      |||          |||         |||||||\n");
     printf("||||||      ||||| ||||||      |||      |||        |||  |||    |||      \n");
     printf("||| |||   ||| ||| |||  |||    |||      |||       |||    |||  |||       \n");
@@ -18,7 +18,7 @@ void title(){
     printf("\nESGI AL GROUPE 5\n");
 }
 
-int mainMenu(){
+int mainMenu() {
     int value;
     printf("\nBienvenue dans le menu principal");
     printf("\nQue souhaitez vous faire ? ");
@@ -31,7 +31,7 @@ int mainMenu(){
     return value;
 }
 
-void mainMenuAction(Game* game) {
+void mainMenuAction(Game *game) {
     int value;
     do {
         value = mainMenu();
@@ -60,42 +60,27 @@ void mainMenuAction(Game* game) {
 }
 
 
-void start(Game* game){
+void start(Game *game) {
     title();
     mainMenuAction(game);
 }
 
-void newGame(Game* game){
-    int choice;
-    do {
-        printf("\n---- Joueur ----- \n");
-        printf("niveau : %d\n", game->player->level);
-        printf("sante : %d\n", game->player->currentHp);
-        printf("xp : %d\n", game->player->currentXp);
-        printf("position : %d | %d\n", game->player->posX, game->player->posY);
-        printf("map : %d\n", game->player->mapId/3);
-        printf("\n1. Jouer");
-        printf("\n2. Sauvegarder la partie");
-        printf("\n0. Quitter la partie");
-        printf("\nVotre choix : ");
-        scanf(" %d", &choice);
-        switch (choice) {
-            case 1:
-                tourAction(game);// prendra en paramètre la map, le joueur et la liste d'item
-                break;
-            case 2:
-                printf("\nSauvegarde..");
-                saveGame(game);
-                break;
-            case 0:
-                break;
-            default:
-                printf("\nChoix incorrect");
-        }
-    } while (choice != 0);
+void newGame(Game *game) {
+    printf("\n---- Joueur ----- \n");
+    printf("niveau : %d\n", game->player->level);
+    printf("sante : %d\n", game->player->currentHp);
+    printf("xp : %d\n", game->player->currentXp);
+    printf("position : %d | %d\n", game->player->posX, game->player->posY);
+    printf("map : %d\n", game->player->mapId / 3);
+    printf("\n1. Jouer");
+    printf("\n2. Sauvegarder la partie");
+    printf("\n0. Quitter la partie");
+    printf("\nVotre choix : ");
+    SDLMove(game);
+
 }
 
-int tourMenu(){
+int tourMenu() {
     int value;
     printf("\nQue souhaitez vous faire : ");
     printf("\n1. Me deplacer ");
@@ -106,7 +91,7 @@ int tourMenu(){
     return value;
 }
 
-void tourAction(Game* game){
+void tourAction(Game *game) {
     int value;
     do {
         value = tourMenu();
@@ -126,15 +111,15 @@ void tourAction(Game* game){
             default:
                 printf("\nChoix incorrect");
         }
-    }while (value != 0);
+    } while (value != 0);
 }
 
-int callMove(Game* game){
+int callMove(Game *game) {
     int input;
     int done = 0;
     displayMap(game->maps[game->player->mapId], game->maps[9][game->player->mapId / 3][0],
                game->maps[9][game->player->mapId / 3][1]);
-    while (done == 0 ){
+    while (done == 0) {
         printf("1. Haut\n");
         printf("2. Droite\n");
         printf("3. Bas\n");
@@ -154,7 +139,7 @@ int callMove(Game* game){
     return done;
 }
 
-void test(Game* game){
+void test(Game *game) {
     game->player->level = 3;
     displayMap(game->maps[0], game->maps[9][0][0], game->maps[9][0][1]);
     //loadMap(game);
