@@ -29,7 +29,13 @@ void freeGame(Game* game){
         free(game->itemList[i]);
     }
     free(game->itemList);
-
+    SDL_DestroyRenderer(game->renderer);
+    SDL_DestroyWindow(game->window);
+    for(int i = 0; i < 25; i += 1){
+        SDL_DestroyTexture(game->mapTextures[i]);
+    }
+    SDL_DestroyTexture(game->mapTextures[102]);
+    free(game->mapTextures);
     free(game);
 }
 

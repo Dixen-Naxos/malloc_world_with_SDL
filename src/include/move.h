@@ -8,6 +8,7 @@
 #include "player.h"
 #include "battles.h"
 #include "pnj.h"
+#include "sdl_functions.h"
 
 void checkCanMove(Game* game, int choice);
 int checkInInventory(Player* player, int itemId);
@@ -20,5 +21,6 @@ void passPortal(Game* game, int idPortal);
 void decrementTimers(Game* game);
 void move(Game* game, int posX, int posY);
 void movePlayerAddTimer(Game *game, int posX, int posY, int timer);
+int checkInInventoryWeapon(Game* game);
 
 #endif //MALLOC_WORLD_MOVE_H

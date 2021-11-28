@@ -39,7 +39,7 @@ void SDL_ExitWithError(const char *message) {
 // create window
 int createWindow(SDL_Window **window, int x, int y) {
 
-    *window = SDL_CreateWindow("lifegame-editor4", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, x,
+    *window = SDL_CreateWindow("Malloc World", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, x,
                                y, SDL_WINDOW_SHOWN);
     if (*window == NULL) {
         SDL_ExitWithError("Error create window");
@@ -151,6 +151,339 @@ void displayTTF(SDL_Renderer *renderer, TTF_Font *font, char *texte, int x, int 
     SDL_FreeSurface(textSurface);
 }
 
+void createMapTextures(Game *game) {
+    char *paths[103] = {"../resources/textures/-3.png", "../resources/textures/-2.png", "../resources/textures/-1.png",
+                        "../resources/textures/0.png", "../resources/textures/1.png", "../resources/textures/2.png",
+                        "../resources/textures/3.png", "../resources/textures/4.png", "../resources/textures/5.png",
+                        "../resources/textures/6.png", "../resources/textures/7.png", "../resources/textures/8.png",
+                        "../resources/textures/9.png", "../resources/textures/10.png", "../resources/textures/11.png",
+                        "../resources/textures/12.png", "../resources/textures/13.png", "../resources/textures/14.png",
+                        "../resources/textures/15.png", "../resources/textures/16.png", "../resources/textures/17.png",
+                        "../resources/textures/18.png", "../resources/textures/19.png", "../resources/textures/20.png",
+                        "../resources/textures/21.png"};
+    paths[102] = "../resources/textures/99.png";
+    SDL_Surface *surfaces[103];
+    for(int i = 0; i < 25; i += 1){
+        surfaces[i] = IMG_Load(paths[i]);
+        if (surfaces[i] == NULL)
+            SDL_ExitAndDestroy("Can't load image", game->renderer, game->window);
+    }
+    surfaces[102] = IMG_Load(paths[102]);
+    if (surfaces[102] == NULL)
+        SDL_ExitAndDestroy("Can't load image", game->renderer, game->window);
+    for (int i = 0; i < 25; i += 1) {
+        game->mapTextures[i] = SDL_CreateTextureFromSurface(game->renderer, surfaces[i]);
+        if (game->mapTextures[i] == NULL)
+            SDL_ExitAndDestroy("Can't create texture", game->renderer, game->window);
+    }
+    game->mapTextures[102] = SDL_CreateTextureFromSurface(game->renderer, surfaces[102]);
+    if (game->mapTextures[102] == NULL)
+        SDL_ExitAndDestroy("Can't create texture", game->renderer, game->window);
+    for(int i = 0; i < 24; i += 1){
+        free(surfaces[i]);
+    }
+    free(surfaces[102]);
+}
+
+SDL_bool SDLPnjChoice(Game* game, SDL_Scancode scancodePnj){
+    switch (scancodePnj) {
+        case SDL_SCANCODE_0:
+            return SDL_FALSE;
+        case SDL_SCANCODE_1:
+            repairStuff(game);
+            break;
+        case SDL_SCANCODE_2:
+            break;
+        case SDL_SCANCODE_3:
+            break;
+        default:
+            break;
+    }
+    return SDL_TRUE;
+}
+
+void SDLPnjMenu(Game* game){
+    SDL_Surface *menuImg = NULL;
+    SDL_Texture *menuTexture = NULL;
+    SDL_Rect menuRectangle;
+    createImg(&game->renderer, &game->window, &menuImg, &menuTexture, &menuRectangle,
+              "../resources/textures/fonds/battle.jpg", 0, 0);
+    SDL_bool gameOn = SDL_TRUE;
+    while (gameOn) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                case SDL_KEYDOWN:
+                    gameOn = SDLPnjChoice(game, event.key.keysym.scancode);
+                default:
+                    break;
+            }
+        }
+        SDL_RenderClear(game->renderer);
+        SDL_RenderCopy(game->renderer, menuTexture, NULL, &menuRectangle);
+        SDL_RenderPresent(game->renderer);
+        SDL_Delay(1000 / 60);
+    }
+}
+
+SDL_bool SDLPotionChoice(Game* game, SDL_Scancode scancodePotion, int* posPotion){
+    switch (scancodePotion) {
+        case SDL_SCANCODE_1:
+            if(posPotion[0] != -1 && game->player->inventory->inventoryContent[posPotion[0]]->quantity > 0 && strcmp(game->player->inventory->inventoryContent[posPotion[0]]->type, "Soin") == 0) {
+                game->player->currentHp += 30;
+                game->player->inventory->inventoryContent[posPotion[0]]->quantity -= 1;
+            }
+            break;
+        case SDL_SCANCODE_2:
+            if(posPotion[1] != -1 && game->player->inventory->inventoryContent[posPotion[1]]->quantity > 0 && strcmp(game->player->inventory->inventoryContent[posPotion[1]]->type, "Soin") == 0) {
+                game->player->currentHp += 80;
+                game->player->inventory->inventoryContent[posPotion[1]]->quantity -= 1;
+            }
+            break;
+        case SDL_SCANCODE_3:
+            if(posPotion[2] != -1 && game->player->inventory->inventoryContent[posPotion[2]]->quantity > 0 && strcmp(game->player->inventory->inventoryContent[posPotion[2]]->type, "Soin") == 0) {
+                game->player->currentHp += 200;
+                game->player->inventory->inventoryContent[posPotion[2]]->quantity -= 1;
+            }
+            break;
+        default:
+            break;
+    }
+    if(game->player->currentHp > game->player->hpEvolution[game->player->level]) {
+        game->player->currentHp = game->player->hpEvolution[game->player->level];
+    }
+    return SDL_FALSE;
+}
+
+void displayPotionMenu(Game* game, int* posPotion){
+    if(game->player->currentHp < game->player->hpEvolution[game->player->level]) {
+        for(int i = 0; i < INVENTORY_SIZE; i++) {
+            if(game->player->inventory->inventoryContent[i]->value == 15) {
+                posPotion[0] = i;
+            } else if(game->player->inventory->inventoryContent[i]->value == 26) {
+                posPotion[1] = i;
+            } else if(game->player->inventory->inventoryContent[i]->value == 34) {
+                posPotion[2] = i;
+            }
+        }
+        SDL_Surface *menuImg = NULL;
+        SDL_Texture *menuTexture = NULL;
+        SDL_Rect menuRectangle;
+        createImg(&game->renderer, &game->window, &menuImg, &menuTexture, &menuRectangle,
+                  "../resources/textures/fonds/battle.jpg", 0, 0);
+        char text[256];
+        if(posPotion[0] != -1 || posPotion[1] != -1 || posPotion[2] != -1) {
+
+            if (posPotion[0] != -1) {
+                sprintf(text, "Vous avez %d potions de niveau I. Appuyez sur 1 pour les utiliser.\n",
+                        game->player->inventory->inventoryContent[posPotion[0]]->quantity);
+                displayTTF(game->renderer, game->font, text, 50, 50);
+            }
+
+            if (posPotion[1] != -1) {
+                sprintf(text, "Vous avez %d potions de niveau II. Appuyez sur 2 pour les utiliser.\n",
+                        game->player->inventory->inventoryContent[posPotion[1]]->quantity);
+                displayTTF(game->renderer, game->font, text, 50, 100);
+            }
+
+            if (posPotion[2] != -1) {
+                sprintf(text, "Vous avez %d potions de niveau III. Appuyez sur 3 pour les utiliser.\n",
+                        game->player->inventory->inventoryContent[posPotion[2]]->quantity);
+                displayTTF(game->renderer, game->font, text, 50, 150);
+            }
+        }
+        }
+}
+
+void SDLPotionMenu(Game* game){
+    int* posPotion = malloc(sizeof(int) * 3);
+    posPotion[0] = -1;
+    posPotion[1] = -1;
+    posPotion[2] = -1;
+
+    SDL_Surface *menuImg = NULL;
+    SDL_Texture *menuTexture = NULL;
+    SDL_Rect menuRectangle;
+    createImg(&game->renderer, &game->window, &menuImg, &menuTexture, &menuRectangle,
+              "../resources/textures/fonds/battle.jpg", 0, 0);
+    SDL_bool potionOn = SDL_TRUE;
+
+    while (potionOn) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                case SDL_KEYDOWN:
+                    potionOn = SDLPotionChoice(game, event.key.keysym.scancode, posPotion);
+                default:
+                    break;
+            }
+        }
+        SDL_RenderClear(game->renderer);
+        SDL_RenderCopy(game->renderer, menuTexture, NULL, &menuRectangle);
+        displayPotionMenu(game, posPotion);
+        SDL_RenderPresent(game->renderer);
+        SDL_Delay(1000 / 60);
+    }
+}
+
+void displayCarac(Game* game, Monster* monster, int weaponIndex){
+    char text[256];
+    if(weaponIndex != -1){
+        sprintf(text, "Nom : %s     HP : %d", monster->name, monster->hp);
+        displayTTF(game->renderer, game->font, text, 450, 30);
+        sprintf(text, "Player :  HP : %d   durability : %d", game->player->currentHp, game->player->inventory->inventoryContent[weaponIndex]->durability);
+        displayTTF(game->renderer, game->font, text, 100, 600);
+    }
+}
+
+SDL_bool SDLBattleChoice(Game* game, SDL_Scancode scancodeBattle, Monster* monster, int* weaponIndex, int armor, int posX, int posY){
+    int res;
+    switch (scancodeBattle) {
+        case SDL_SCANCODE_0:
+            return SDL_FALSE;
+        case SDL_SCANCODE_1:
+            res = attackInBattle(game->player, monster, *weaponIndex, armor);
+            if(game->player->inventory->inventoryContent[*weaponIndex]->durability == 0){
+                printf("index 1 : %d", * weaponIndex);
+                *weaponIndex = SDLWeaponMenu(game);
+                printf("index 2 : %d", * weaponIndex);
+                if(*weaponIndex == -1){
+                    return SDL_FALSE;
+                }
+            }
+            if(res == 1){
+                updateXP(game->player, monster);
+                movePlayerAddTimer(game, posX, posY, 15);
+                return SDL_FALSE;
+            }else if(res == 2) {
+                defeat(game);
+            }
+            break;
+        case SDL_SCANCODE_2:
+            SDLPotionMenu(game);
+            break;
+        case SDL_SCANCODE_3:
+            res = escapeFromBattle();
+            if(res == 1){
+                return SDL_FALSE;
+            }
+        default:
+            break;
+    }
+    return SDL_TRUE;
+}
+
+void SDLBattleMenu(Game* game, int monsterId, int posX, int posY){
+    int armor = armorChoice(game->player);
+    int* weaponIndex = malloc(sizeof(int));
+    *weaponIndex = SDLWeaponMenu(game);
+    SDL_Surface *menuImg = NULL;
+    SDL_Texture *menuTexture = NULL;
+    SDL_Rect menuRectangle;
+    createImg(&game->renderer, &game->window, &menuImg, &menuTexture, &menuRectangle,
+              "../resources/textures/fonds/battle.jpg", 0, 0);
+    Monster* copyMonster = malloc(sizeof(Monster));
+    *copyMonster = (Monster) {game->monsterList[monsterId]->id, game->monsterList[monsterId]->name, game->monsterList[monsterId]->hp, game->monsterList[monsterId]->att, game->monsterList[monsterId]->def, game->monsterList[monsterId]->xp, game->monsterList[monsterId]->imagePath};
+
+    SDL_Surface *monsterImg = NULL;
+    SDL_Texture *monsterTexture = NULL;
+    SDL_Rect monsterRectangle;
+    createImg(&game->renderer, &game->window, &monsterImg, &monsterTexture, &monsterRectangle,
+              copyMonster->imagePath, 300, 100);
+
+    SDL_bool monsterOn = SDL_TRUE;
+    while (monsterOn) {
+        SDL_Event eventWeapon;
+        while (SDL_PollEvent(&eventWeapon)) {
+            switch (eventWeapon.type) {
+                case SDL_KEYDOWN:
+                    if(*weaponIndex != -1){
+                        monsterOn = SDLBattleChoice(game, eventWeapon.key.keysym.scancode, copyMonster, weaponIndex, armor, posX, posY);
+                    }else{
+                        monsterOn = SDL_FALSE;
+                    }
+                default:
+                    break;
+            }
+        }
+        SDL_RenderClear(game->renderer);
+        SDL_RenderCopy(game->renderer, menuTexture, NULL, &menuRectangle);
+        SDL_RenderCopy(game->renderer, monsterTexture, NULL, &monsterRectangle);
+        displayCarac(game, copyMonster, *weaponIndex);
+        SDL_RenderPresent(game->renderer);
+        SDL_Delay(1000 / 60);
+    }
+    free(copyMonster);
+}
+
+void displayAvailableWeapons(Game* game, int* posWeapon){
+    int cpt = 0;
+    char* weaponText = malloc(sizeof(char) * 256);
+    for(int i = 0; i < INVENTORY_SIZE; i++) {
+        if(strcmp(game->player->inventory->inventoryContent[i]->type, "Arme") == 0 && game->player->inventory->inventoryContent[i]->durability > 0) {
+            posWeapon[cpt] = i;
+            sprintf(weaponText, "Tapez %d pour prendre cette arme : %s %d %d", cpt, game->player->inventory->inventoryContent[i]->name, game->player->inventory->inventoryContent[i]->durability, game->player->inventory->inventoryContent[i]->damage);
+            displayTTF(game->renderer, game->font, weaponText, 480, 30  + 32 * cpt);
+            cpt += 1;
+        }
+    }
+    free(weaponText);
+}
+
+int verifyWeapon(Game* game, int* choice, int* posWeapon){
+    if(*posWeapon != -1){
+        if(game->player->inventory->inventoryContent[posWeapon[*choice]]->damage > 0 && game->player->inventory->inventoryContent[posWeapon[*choice]]->durability > 0){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+SDL_bool SDLWeaponChoice(Game* game, SDL_Scancode scancodeWeapon, int* choice, int* posWeapon){
+    if (scancodeWeapon >= 48 && scancodeWeapon <= 57){
+        *choice = scancodeWeapon - 48;
+        if(verifyWeapon(game, choice, posWeapon) == 1)
+            return SDL_FALSE;
+    }
+    return SDL_TRUE;
+}
+
+int SDLWeaponMenu(Game* game) {
+    int* choice = malloc(sizeof(int));
+    *choice = -1;
+    int* posWeapon = malloc(sizeof(unsigned int*) * 10);
+    for(int i = 0; i<10; i += 1){
+        posWeapon[i] = -1;
+    }
+    SDL_Surface *menuImg = NULL;
+    SDL_Texture *menuTexture = NULL;
+    SDL_Rect menuRectangle;
+    createImg(&game->renderer, &game->window, &menuImg, &menuTexture, &menuRectangle,
+              "../resources/textures/fonds/battle.jpg", 0, 0);
+    SDL_bool weaponOn = SDL_TRUE;
+    while (weaponOn) {
+        if(checkInInventoryWeapon(game) == 0){
+            weaponOn = SDL_FALSE;
+            break;
+        }
+        SDL_Event eventWeapon;
+        while (SDL_PollEvent(&eventWeapon)) {
+            switch (eventWeapon.type) {
+                case SDL_KEYDOWN:
+                    weaponOn = SDLWeaponChoice(game, eventWeapon.key.keysym.sym, choice, posWeapon);
+                default:
+                    break;
+            }
+        }
+        SDL_RenderClear(game->renderer);
+        SDL_RenderCopy(game->renderer, menuTexture, NULL, &menuRectangle);
+        displayAvailableWeapons(game, posWeapon);
+        SDL_RenderPresent(game->renderer);
+        SDL_Delay(1000 / 30);
+    }
+    return *choice;
+}
+
 SDL_bool SDLMoveChoice(Game* game, SDL_Scancode scancodeMove){
     switch (scancodeMove) {
         case SDL_SCANCODE_DOWN:
@@ -185,13 +518,13 @@ void SDLMove(Game* game){
               "../resources/textures/fonds/battle.jpg", 0, 0);
     SDL_Rect *rectangle = malloc(sizeof(SDL_Rect));
     SDL_bool moveOn = SDL_TRUE;
+
     while (moveOn) {
         SDL_Event eventMove;
         while (SDL_PollEvent(&eventMove)) {
             switch (eventMove.type) {
                 case SDL_KEYDOWN:
                     moveOn = SDLMoveChoice(game, eventMove.key.keysym.scancode);
-                    SDL_Delay(500);
                 default:
                     break;
             }
@@ -199,7 +532,7 @@ void SDLMove(Game* game){
         SDL_RenderClear(game->renderer);
         SDL_RenderCopy(game->renderer, menuTexture, NULL, &menuRectangle);
         renderMap(game, rectangle);
-        displayTTF(game->renderer, game->font, "test", 600, 600);
+        displayTTF(game->renderer, game->font, game->text, 600, 600);
         SDL_RenderPresent(game->renderer);
         SDL_Delay(1000 / 60);
     }

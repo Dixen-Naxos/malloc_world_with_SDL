@@ -9,6 +9,7 @@
 #include "../../ext/SDL2/include/SDL_ttf.h"
 #include "../../ext/SDL2/include/SDL_image.h"
 #include "cli.h"
+#include "battles.h"
 
 void renderElement(SDL_Texture *texture, SDL_Renderer *renderer, SDL_Rect *rectangle, int x, int y, SDL_Window *window);
 
@@ -43,9 +44,37 @@ int updateRenderer(SDL_Texture **texture, SDL_Renderer **renderer, SDL_Rect *rec
 
 void displayTTF(SDL_Renderer *renderer, TTF_Font *font, char *texte, int x, int y);
 
+void createMapTextures(Game *game);
+
+SDL_bool SDLPotionChoice(Game* game, SDL_Scancode scancodePotion, int* posPotion);
+
+void SDLPotionMenu(Game* game);
+
+void displayCarac(Game* game, Monster* monster, int weaponIndex);
+
+SDL_bool SDLBattleChoice(Game* game, SDL_Scancode scancodeBattle, Monster* monster, int* weaponIndex, int armor, int posX, int posY);
+
+void SDLBattleMenu(Game* game, int monsterId, int posX, int posY);
+
+void displayAvailableWeapons(Game* game, int* posWeapon);
+
+int verifyWeapon(Game* game, int* weaponChoice, int* posWeapon);
+
+SDL_bool SDLWeaponChoice(Game* game, SDL_Scancode scancodeWeapon, int* weaponChoice, int* posWeapon);
+
+int SDLWeaponMenu(Game* game);
+
+
+
+
+
 void SDLMove(Game* game);
 
 SDL_bool SDLMoveChoice(Game* game, SDL_Scancode scancode);
+
+
+
+
 
 SDL_bool SDLMainChoice(Game* game, SDL_Scancode scancode);
 

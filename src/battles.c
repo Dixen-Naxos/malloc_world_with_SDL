@@ -4,9 +4,6 @@
 
 #include "battles.h"
 
-int hpEvolution[11] = {0, 100, 110, 130, 160, 200, 250, 300, 350, 425, 500};
-int xpEvolution[11] = {0, 10, 15, 25, 30, 40, 50, 52, 58, 64, 70};
-
 int armorChoice(Player* player) {
     int maxArmor = 0;
 
@@ -21,10 +18,10 @@ int armorChoice(Player* player) {
 
 void updateXP(Player* player, Monster* monster) {
     player->currentXp += monster->xp;
-        if(player->currentXp >= xpEvolution[player->level]) {
-            player->level += 1;
-            player->currentHp = hpEvolution[player->level];
-        }
+    if (player->currentXp >= player->xpEvolution[player->level]) {
+        player->level += 1;
+        player->currentHp = player->hpEvolution[player->level];
+    }
 }
 
 int weaponChoice(Player* player) {
@@ -50,11 +47,13 @@ int weaponChoice(Player* player) {
     return posWeapon[choice];
 }
 
-Monster* battle(Player* player, Monster* monster, int idWeapon) {
+void battle(Player* player, Monster* monster, int idWeapon, int armor) {
     monster->hp -= player->inventory->inventoryContent[idWeapon]->damage;
     printf("%d\n", player->currentHp);
     player->inventory->inventoryContent[idWeapon]->durability -= 1;
-    return monster;
+    if(monster->hp > 0){
+        player->currentHp -= (monster->att * (1 - (0.01 * armor)));
+    }
 }
 
 int menu(Player* player, Monster* monster, Game* game, int posX, int posY) {
@@ -97,7 +96,7 @@ int roundChoices(Player* player, Monster* monster, int choice, int idWeapon, int
     int random = 0;
     if(choice == 1) {
         if(player->currentHp > 0 && monster->hp > 0) {
-            monster = battle(player, monster, idWeapon);
+            battle(player, monster, idWeapon, maxArmor);
         }
 
         if(monster->hp <= 0) {
@@ -115,14 +114,8 @@ int roundChoices(Player* player, Monster* monster, int choice, int idWeapon, int
         usingPotion(player);
     }
 
-    if(choice == 3) {
-        srand(time(NULL));
-        random = rand() % 100;
-
-        if(random < 30) {
-            printf("Vous avez fuis.");
-            return 3;
-        }
+    if(choice == 3 && escapeFromBattle() == 1) {
+        return 3;
     }
 
     player->currentHp -= (monster->att * (1 - (0.01 * maxArmor)));
@@ -131,11 +124,36 @@ int roundChoices(Player* player, Monster* monster, int choice, int idWeapon, int
     return 0;
 }
 
+int attackInBattle(Player* player, Monster* monster, int idWeapon, int maxArmor){
+    if(player->currentHp > 0 && monster->hp > 0) {
+        battle(player, monster, idWeapon, maxArmor);
+    }
+
+    if(monster->hp <= 0) {
+        return 1;
+    }
+
+    if(player->currentHp <= 0) {
+        return 2;
+    }
+    return 0;
+}
+int escapeFromBattle(void){
+    int random;
+    srand(time(NULL));
+    random = rand() % 100;
+    printf("%d\n", random);
+    if(random < 30) {
+        printf("Vous avez fuis.");
+        return 1;
+    }
+    return 0;
+}
 void usingPotion(Player* player) {
     int posPotion[3] = {-1, -1, -1};
     int choice = 0;
 
-    if(player->currentHp < hpEvolution[player->level]) {
+    if(player->currentHp < player->hpEvolution[player->level]) {
         for(int i = 0; i < INVENTORY_SIZE; i++) {
             if(player->inventory->inventoryContent[i]->value == 15) {
                 posPotion[0] = i;
@@ -170,9 +188,18 @@ void usingPotion(Player* player) {
                 player->inventory->inventoryContent[posPotion[choice - 1]]->quantity -= 1;
             }
 
-            if(player->currentHp > hpEvolution[player->level]) {
-                player->currentHp = hpEvolution[player->level];
+            if(player->currentHp > player->hpEvolution[player->level]) {
+                player->currentHp = player->hpEvolution[player->level];
             }
         }
     }
+}
+
+void defeat(Game* game){
+    printf("Effacer la sauvegarde\n");
+    FILE* saveFile;
+    saveFile = fopen("../resources/save.txt", "w");
+    fclose(saveFile);
+    freeGame(game);
+    exit(1);
 }
