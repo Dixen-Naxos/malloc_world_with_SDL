@@ -154,6 +154,8 @@ int getMapHeight(FILE* saveFile, int zone){
 }
 
 void savePlayer(FILE* saveFile, Game* game){
+    int hpEvolution[11] = {0, 100, 110, 130, 160, 200, 250, 300, 350, 425, 500};
+    int xpEvolution[11] = {0, 10, 15, 25, 30, 40, 50, 52, 58, 64, 70};
     if(saveFile != NULL) {
         fprintf(saveFile, "=== PLAYER ===\n");
         fprintf(
@@ -161,9 +163,9 @@ void savePlayer(FILE* saveFile, Game* game){
                 "{%d}\n{%d}/{%d}\n{%d}/{%d}\n",
                 game->player->level,
                 game->player->currentXp,
-                getNextXp(game),
+                xpEvolution[game->player->level],
                 game->player->currentHp,
-                getNextHp(game)
+                hpEvolution[game->player->level]
         );
         saveInventory(saveFile, game->player->inventory);
         saveStorage(saveFile, game);
