@@ -388,7 +388,7 @@ void SDLBattleMenu(Game* game, int monsterId, int posX, int posY){
     SDL_Texture *menuTexture = NULL;
     SDL_Rect menuRectangle;
     createImg(&game->renderer, &game->window, &menuImg, &menuTexture, &menuRectangle,
-              "../resources/textures/fonds/battle.jpg", 0, 0);
+              "../resources/textures/fonds/battleMenu.png", 0, 0);
     Monster* copyMonster = malloc(sizeof(Monster));
     *copyMonster = (Monster) {game->monsterList[monsterId]->id, game->monsterList[monsterId]->name, game->monsterList[monsterId]->hp, game->monsterList[monsterId]->att, game->monsterList[monsterId]->def, game->monsterList[monsterId]->xp, game->monsterList[monsterId]->imagePath};
 
