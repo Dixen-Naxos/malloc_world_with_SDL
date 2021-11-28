@@ -1,6 +1,8 @@
 #ifndef MALLOC_WORLD_STRUCTURES_H
 #define MALLOC_WORLD_STRUCTURES_H
-
+#include <SDL.h>
+#include <SDL_ttf.h>
+#include <SDL_image.h>
 typedef struct Item {
     int value;
     char *name;
@@ -15,7 +17,6 @@ typedef struct Inventory {
     Item** inventoryContent;
 } Inventory;
 
-
 typedef struct Monster {
     int id;
     char *name;
@@ -23,8 +24,8 @@ typedef struct Monster {
     unsigned short att;
     unsigned short def;
     unsigned short xp;
+    char *imagePath;
 } Monster;
-
 
 typedef struct Player {
     int currentXp;
@@ -34,6 +35,8 @@ typedef struct Player {
     int posX;
     int posY;
     int mapId;
+    int* hpEvolution;
+    int* xpEvolution;
 } Player;
 
 typedef struct Storage {
@@ -59,6 +62,11 @@ typedef struct Game {
     Craft** craft;
     Monster** monsterList;
     Storage* storage;
+    SDL_Renderer* renderer;
+    SDL_Window* window;
+    SDL_Texture* mapTextures[103];
+    TTF_Font* font;
+    char* text;
 } Game;
 
 void freeGame(Game* game);

@@ -192,15 +192,27 @@ void decrementTimers(Game* game){
         }
     }
 }
+
+int checkInInventoryWeapon(Game* game){
+    for(int i = 0; i < INVENTORY_SIZE; i += 1){
+        if(game->player->inventory->inventoryContent[i]->damage > 0 && game->player->inventory->inventoryContent[i]->durability > 0){
+            return 1;
+        }
+    }
+    return 0;
+}
+
 void move(Game* game, int posX, int posY) {
     if (game->maps[game->player->mapId][posX][posY] < 12 && game->maps[game->player->mapId][posX][posY] > 2) {
         collectResources(game, posX, posY);
     } else if (game->maps[game->player->mapId][posX][posY] == 2) {
-        menuPnj(game);
+        SDLPnjMenu(game);
     } else if (game->maps[game->player->mapId][posX][posY] == -1) {
         printf("I can't\n");
     } else if (game->maps[game->player->mapId][posX][posY] < 100 && game->maps[game->player->mapId][posX][posY] > 11) {
-        menu(game->player, game->monsterList[game->maps[game->player->mapId][posX][posY]], game, posX, posY);
+        if(checkInInventoryWeapon(game) == 1){
+            SDLBattleMenu(game,game->maps[game->player->mapId][posX][posY], posX, posY);
+        }
     } else if (game->maps[game->player->mapId][posX][posY] == -2 || game->maps[game->player->mapId][posX][posY] == -3) {
         passPortal(game, game->maps[game->player->mapId][posX][posY]);
     } else {
