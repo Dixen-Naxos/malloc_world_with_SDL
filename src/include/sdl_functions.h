@@ -46,6 +46,10 @@ void displayTTF(SDL_Renderer *renderer, TTF_Font *font, char *texte, int x, int 
 
 void createMapTextures(Game *game);
 
+SDL_bool SDLPnjChoice(Game* game, SDL_Scancode scancodePnj);
+
+void SDLPnjMenu(Game* game);
+
 SDL_bool SDLPotionChoice(Game* game, SDL_Scancode scancodePotion, int* posPotion);
 
 void SDLPotionMenu(Game* game);

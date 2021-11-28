@@ -207,7 +207,13 @@ void SDLPnjMenu(Game* game){
     SDL_Texture *menuTexture = NULL;
     SDL_Rect menuRectangle;
     createImg(&game->renderer, &game->window, &menuImg, &menuTexture, &menuRectangle,
-              "../resources/textures/fonds/battle.jpg", 0, 0);
+              "../resources/textures/fonds/PNJMenu.png", 0, 0);
+
+    SDL_Surface *PNJImg = NULL;
+    SDL_Texture *PNJTexture = NULL;
+    SDL_Rect PNJRectangle;
+    createImg(&game->renderer, &game->window, &PNJImg, &PNJTexture, &PNJRectangle,
+              "../resources/textures/fonds/briatte.png", 640, 50);
     SDL_bool gameOn = SDL_TRUE;
     while (gameOn) {
         SDL_Event event;
@@ -221,6 +227,7 @@ void SDLPnjMenu(Game* game){
         }
         SDL_RenderClear(game->renderer);
         SDL_RenderCopy(game->renderer, menuTexture, NULL, &menuRectangle);
+        SDL_RenderCopy(game->renderer, PNJTexture, NULL, &PNJRectangle);
         SDL_RenderPresent(game->renderer);
         SDL_Delay(1000 / 60);
     }

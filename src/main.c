@@ -11,8 +11,8 @@
 #include "cli.h"
 #include <sdl_functions.h>
 
-//gcc src/*.c -o cmake-build-debug/malloc_world_with_SDL -I src/include -L ext/SDL2/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
-//.\cmake-build-debug\malloc_world_with_SDL.exe
+//gcc src/*.c -o bin/malloc_world_with_SDL -I src/include -L ext/SDL2/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
+//.\malloc_world_with_SDL.exe
 Game *initGame(int, int, int);
 
 int main(int argc, char **argv) {
@@ -23,16 +23,12 @@ int main(int argc, char **argv) {
     int y = 10;
     int zone = 1;
     Game *game = initGame(x, y, zone); // Initialisation de départ du jeu
-    displayMap(game->maps[0], game->maps[9][0][0], game->maps[9][0][1]);
-    addToInventory(game, 15, 60);
     SDLMainMenu(game);
 
     SDL_DestroyRenderer(game->renderer);
     SDL_DestroyWindow(game->window);
 
     SDL_Quit();
-
-    //start(game);
     freeGame(game);
     return 0;
 }
