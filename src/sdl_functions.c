@@ -349,6 +349,7 @@ SDL_bool SDLBattleChoice(Game* game, SDL_Scancode scancodeBattle, Monster* monst
         case SDL_SCANCODE_0:
             return SDL_FALSE;
         case SDL_SCANCODE_1:
+            printf("\ntest : %s, damage : %d, durability : %d\n",game->player->inventory->inventoryContent[*weaponIndex]->name, game->player->inventory->inventoryContent[*weaponIndex]->durability, game->player->inventory->inventoryContent[*weaponIndex]->damage);
             res = attackInBattle(game->player, monster, *weaponIndex, armor);
             if(game->player->inventory->inventoryContent[*weaponIndex]->durability == 0){
                 printf("index 1 : %d", * weaponIndex);
@@ -438,7 +439,7 @@ void displayAvailableWeapons(Game* game, int* posWeapon){
 }
 
 int verifyWeapon(Game* game, int* choice, int* posWeapon){
-    if(*posWeapon != -1){
+    if(posWeapon[*choice] != -1){
         if(game->player->inventory->inventoryContent[posWeapon[*choice]]->damage > 0 && game->player->inventory->inventoryContent[posWeapon[*choice]]->durability > 0){
             return 1;
         }
@@ -471,7 +472,6 @@ int SDLWeaponMenu(Game* game) {
     while (weaponOn) {
         if(checkInInventoryWeapon(game) == 0){
             weaponOn = SDL_FALSE;
-            break;
         }
         SDL_Event eventWeapon;
         while (SDL_PollEvent(&eventWeapon)) {
@@ -488,7 +488,7 @@ int SDLWeaponMenu(Game* game) {
         SDL_RenderPresent(game->renderer);
         SDL_Delay(1000 / 30);
     }
-    return *choice;
+    return posWeapon[*choice];
 }
 
 SDL_bool SDLMoveChoice(Game* game, SDL_Scancode scancodeMove){

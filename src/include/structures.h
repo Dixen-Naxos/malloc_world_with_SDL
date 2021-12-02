@@ -20,7 +20,7 @@ typedef struct Inventory {
 typedef struct Monster {
     int id;
     char *name;
-    unsigned short hp;
+    short hp;
     unsigned short att;
     unsigned short def;
     unsigned short xp;

@@ -18,7 +18,7 @@ Monster **createMonsterList(void) {
         monsterList[i] = NULL;
     }
     char *names[10] = {"Sanglier", "Slime", "Emmanuel Macron", "Petit ours brun", "Flan", "Caribou", "Pomme de terre vivante", "Sananes", "Ancien dragon", "Jesus"};
-    unsigned short hp[10] = {5, 3, 7, 16, 2, 25, 7, 70, 60, 80};
+    short hp[10] = {5, 3, 7, 16, 2, 25, 7, 70, 60, 80};
     unsigned short att[10] = {5, 1, 4, 8, 35, 15, 3, 3, 60, 50};
     unsigned short def[10] = {1, 0, 3, 6, 40, 15, 1, 2, 40, 20};
     unsigned short xp[10] = {5, 4, 8, 9, 60, 15, 20, 22, 60, 60};
